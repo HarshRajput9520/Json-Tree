@@ -8,7 +8,7 @@ import ReactFlow, {
   useReactFlow,
 } from "reactflow";
 
-function JsonNode({ data }) {
+function JsonNode({ data, isDark }) {
   const { label, kind, value } = data || {};
 
   const borderColor =
@@ -16,17 +16,19 @@ function JsonNode({ data }) {
 
   return (
     <div
+      className="json-node"
       style={{
         minWidth: 240,
         maxWidth: 260,
         padding: "16px 20px 14px",
         borderRadius: 12,
-        background: "#ffffff",
+        background: "var(--node-bg)",
         border: `3px solid ${borderColor}`,
         boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
         boxSizing: "border-box",
         textAlign: "center",
         lineHeight: 1.3,
+        color: "var(--node-text)",
       }}
     >
       {/* top handle with spacing */}
@@ -34,10 +36,11 @@ function JsonNode({ data }) {
         type="target"
         id="t"
         position={Position.Top}
-        style={{ top: -6, background: "#1a202c" }}
+        style={{ top: -6, background: isDark ? "#f7fafc" : "#1a202c" }}
       />
 
       <div
+        className="node-label"
         style={{
           fontWeight: 700,
           fontSize: 14,
@@ -46,6 +49,7 @@ function JsonNode({ data }) {
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
           marginBottom: kind === "primitive" && value !== undefined ? 4 : 0,
+          color: "var(--node-text)",
         }}
         title={label}
       >
@@ -54,16 +58,17 @@ function JsonNode({ data }) {
 
       {kind === "primitive" && value !== undefined && (
         <div
+          className="node-value"
           style={{
             fontWeight: 500,
             fontSize: 12,
-            color: "#4a5568",
             maxWidth: 220,
             overflow: "hidden",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
+            color: "var(--text-secondary)",
           }}
-          title={String(value)} 
+          title={String(value)}
         >
           {String(value)}
         </div>
@@ -74,16 +79,16 @@ function JsonNode({ data }) {
         type="source"
         id="b"
         position={Position.Bottom}
-        style={{ bottom: -6, background: "#1a202c" }}
+        style={{ bottom: -6, background: isDark ? "#f7fafc" : "#1a202c" }}
       />
     </div>
   );
 }
 
-export default function TreeCanvas({ graph, rfRef, highlightId, onNodeClick }) {
+export default function TreeCanvas({ graph, rfRef, highlightId, onNodeClick, isDark }) {
   const { fitView } = useReactFlow();
 
-  const nodeTypes = useMemo(() => ({ json: JsonNode }), []);
+  const nodeTypes = useMemo(() => ({ json: p => <JsonNode {...p} isDark={isDark} /> }), [isDark]);
 
   // fallback for empty
   const fallbackNodes = [
@@ -128,7 +133,7 @@ export default function TreeCanvas({ graph, rfRef, highlightId, onNodeClick }) {
       return {
         ...n,
         style: {
-          background: isHighlighted ? "#f0fff4" : "#ffffff",
+          background: isHighlighted ? "#f0fff4" : "var(--node-bg)",
           border: `3px solid ${baseBorder}`,
           borderRadius: 12,
           boxShadow: isHighlighted

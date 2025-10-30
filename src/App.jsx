@@ -170,6 +170,7 @@ export default function App() {
             graph={graph}
             highlightId={highlightId}
             onNodeClick={handleNodeClick}
+            isDark={isDark}
           />
         </ReactFlowProvider>
       </main>

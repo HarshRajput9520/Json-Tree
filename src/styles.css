@@ -77,11 +77,11 @@ html, body, #root {
   border: 3px solid #3182ce !important;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
   width: 200px !important;
-  height: 60px !important;
   min-width: 200px !important;
-  min-height: 60px !important;
   max-width: 200px !important;
-  max-height: 60px !important;
+  min-height: 60px !important;
+  height: auto !important;
+  max-height: none !important;
   text-align: center;
   transition: all 0.2s ease;
   display: flex !important;
