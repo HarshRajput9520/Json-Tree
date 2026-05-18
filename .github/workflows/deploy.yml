@@ -23,8 +23,9 @@ jobs:
         run: npm ci
 
       - name: Security Audit
-        run: npm audit --audit-level=high || exit 0
-      
+        run: npm audit --audit-level=high
+        continue-on-error: true      
+
       - name: Build Application
         run: npm run build
 
