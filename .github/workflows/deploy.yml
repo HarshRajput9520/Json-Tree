@@ -1,0 +1,95 @@
+name: Frontend Blue Green Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Security Audit
+        run: npm audit --audit-level=high || exit 0
+      
+      - name: Build Application
+        run: npm run build
+
+      - name: Detect Active Slot
+        shell: powershell
+        run: |
+          $symlinkPath = "D:\deployed-apps\json-tree-converter\current"
+
+          if (Test-Path $symlinkPath) {
+            $target = (Get-Item $symlinkPath).Target
+
+            if ($target -like "*blue*") {
+              Add-Content -Path $env:GITHUB_ENV -Value "TARGET_SLOT=green"
+            }
+            else {
+              Add-Content -Path $env:GITHUB_ENV -Value "TARGET_SLOT=blue"
+            }
+          }
+          else {
+            Add-Content -Path $env:GITHUB_ENV -Value "TARGET_SLOT=blue"
+          }
+
+      - name: Clean Target Folder
+        shell: powershell
+        run: |
+          $targetPath = "D:\deployed-apps\json-tree-converter\${env:TARGET_SLOT}"
+
+          if (!(Test-Path $targetPath)) {
+            New-Item -ItemType Directory -Path $targetPath -Force
+          }
+
+          Get-ChildItem $targetPath -Force -ErrorAction SilentlyContinue |
+            Remove-Item -Recurse -Force -ErrorAction SilentlyContinue
+
+      - name: Copy Build Artifacts
+        shell: powershell
+        run: |
+          Copy-Item "dist\*" `
+            "D:\deployed-apps\json-tree-converter\${env:TARGET_SLOT}\" `
+            -Recurse -Force
+
+      - name: Validate Build
+        shell: powershell
+        run: |
+          $indexFile = "D:\deployed-apps\json-tree-converter\${env:TARGET_SLOT}\index.html"
+
+          if (!(Test-Path $indexFile)) {
+            throw "Build validation failed: index.html missing"
+          }
+
+      - name: Write Version File
+        shell: powershell
+        run: |
+          git rev-parse HEAD |
+            Out-File "D:\deployed-apps\json-tree-converter\${env:TARGET_SLOT}\version.txt"
+
+      - name: Switch Symlink
+        shell: powershell
+        run: |
+          $symlinkPath = "D:\deployed-apps\json-tree-converter\current"
+          $targetPath = "D:\deployed-apps\json-tree-converter\${env:TARGET_SLOT}"
+
+          if (Test-Path $symlinkPath) {
+            Remove-Item $symlinkPath -Force
+          }
+
+          New-Item -ItemType SymbolicLink `
+            -Path $symlinkPath `
+            -Target $targetPath
