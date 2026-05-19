@@ -88,10 +88,6 @@ jobs:
           $symlinkPath = "D:\deployed-apps\json-tree-converter\current"
           $targetPath = "D:\deployed-apps\json-tree-converter\${env:TARGET_SLOT}"
 
-          if (Test-Path $symlinkPath) {
-            Remove-Item $symlinkPath -Force
-          }
+          cmd /c rmdir $symlinkPath
 
-          New-Item -ItemType SymbolicLink `
-            -Path $symlinkPath `
-            -Target $targetPath
+          cmd /c mklink /D $symlinkPath $targetPath
