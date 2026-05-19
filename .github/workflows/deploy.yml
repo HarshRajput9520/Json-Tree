@@ -77,10 +77,12 @@ jobs:
           }
 
       - name: Write Version File
-        shell: powershell
-        run: |
-          git rev-parse HEAD |
-            Out-File "D:\deployed-apps\json-tree-converter\${env:TARGET_SLOT}\version.txt"
+  shell: powershell
+  run: |
+    git config --global --add safe.directory "$PWD"
+
+    git rev-parse HEAD |
+      Out-File "D:\deployed-apps\json-tree-converter\${env:TARGET_SLOT}\version.txt"
 
       - name: Switch Symlink
         shell: powershell
