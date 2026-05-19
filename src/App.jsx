@@ -8,7 +8,6 @@ import { buildGraph } from "./lib/buildGraph";
 import "reactflow/dist/style.css";
 import "./styles.css";
 
-
 /**
  * Root Application
  * Handles JSON parsing, React Flow graph generation,
