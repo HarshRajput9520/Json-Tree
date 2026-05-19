@@ -2,10 +2,11 @@ name: Frontend Blue Green Deploy
 
 on:
   workflow_dispatch:
+
   push:
     branches:
       - main
-      - feature/react-flow 
+      - feature/react-flow
 
 jobs:
   deploy:
@@ -25,7 +26,7 @@ jobs:
 
       - name: Security Audit
         run: npm audit --audit-level=high
-        continue-on-error: true      
+        continue-on-error: true
 
       - name: Build Application
         run: npm run build
@@ -84,3 +85,29 @@ jobs:
 
           git rev-parse HEAD |
             Out-File "D:\deployed-apps\json-tree-converter\${env:TARGET_SLOT}\version.txt"
+
+      - name: Switch Symlink
+        shell: powershell
+        run: |
+          $symlinkPath = "D:\deployed-apps\json-tree-converter\current"
+          $targetPath = "D:\deployed-apps\json-tree-converter\${env:TARGET_SLOT}"
+
+          if (Test-Path $symlinkPath) {
+            cmd /c rmdir $symlinkPath
+          }
+
+          cmd /c mklink /D $symlinkPath $targetPath
+
+      - name: Verify Deployment
+        shell: powershell
+        run: |
+          Start-Sleep -Seconds 5
+
+          $response = Invoke-WebRequest "http://localhost:5003"
+
+          if ($response.StatusCode -ne 200) {
+            throw "Deployment verification failed"
+          }
+
+      - name: Deployment Completed
+        run: echo "Blue-Green deployment completed successfully!"
