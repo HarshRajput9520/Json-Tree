@@ -134,7 +134,7 @@ export default function App() {
   return (
     <div className={`app ${isDark ? "dark" : ""}`}>
       {/* Left Sidebar */}
-      <aside className="left">
+      {/* <aside className="left">
         <header className="theme-toggle">
           <label htmlFor="darkModeToggle">Dark Mode</label>
           <input
@@ -159,11 +159,12 @@ export default function App() {
         </section>
 
         <footer className="status">{status}</footer>
-      </aside>
+      </aside> */}
 
       {/* Visualization Canvas */}
       <main className="right">
-        <ReactFlowProvider>
+        <p>Harsh here</p>
+        {/* <ReactFlowProvider>
           <TreeCanvas
             rfRef={flowRef}
             graph={graph}
@@ -171,7 +172,7 @@ export default function App() {
             onNodeClick={handleNodeClick}
             isDark={isDark}
           />
-        </ReactFlowProvider>
+        </ReactFlowProvider> */}
       </main>
     </div>
   );
