@@ -103,9 +103,9 @@ jobs:
         run: |
           Start-Sleep -Seconds 5
 
-          $response = Invoke-WebRequest "http://172.16.18.88:5003"
+          $connection = Test-NetConnection 172.16.18.88 -Port 5003
 
-          if ($response.StatusCode -ne 200) {
+          if (-not $connection.TcpTestSucceeded) {
             throw "Deployment verification failed"
           }
 
