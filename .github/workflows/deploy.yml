@@ -103,7 +103,7 @@ jobs:
         run: |
           Start-Sleep -Seconds 5
 
-          $response = Invoke-WebRequest "http://localhost:5003"
+          $response = Invoke-WebRequest "http://172.16.18.88:5003"
 
           if ($response.StatusCode -ne 200) {
             throw "Deployment verification failed"
